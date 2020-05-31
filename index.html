@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <style>
+        body{
+            background-color: #111;
+        }
+        header{
+            text-align: center;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .main {
+            width: 80%;
+            height: 80%;
+            margin: 20px auto;
+            background-color: khaki;
+            padding: 10px;
+        }
+        p {
+            color: #fff;
+            text-align: center;
+        }
+       
+    </style>
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <h1>letter  frequency</h1>
+    </header>
+    <div class="main">
+        <canvas id="myChart"></canvas>
+    </div>
+    <p>In a large text, the frequency and percentage frequency of each of the 26 letters of the alphabet was determined. 
+        There are 26 records, each with three values. There is also an initial header line.</p>
+    <script>
+        
+        chart();
+        async function chart(){
+            const data = await getData();
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.x,
+                datasets: [{
+                    label: 'Percentage',
+                    data: data.y,
+                    backgroundColor: 'blue',
+                    borderColor: 'black',
+                    borderWidth: 1
+                    }]
+                },
+            options: {                   
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return  value + '%';
+                                }
+                            }
+                        }]
+                    }
+                }    
+            });
+        }
+
+
+        //get data
+        
+        async function getData(){
+            const x = [];
+            const y = [];
+            const res = await fetch('letter_frequency.csv');
+            const data = await res.text();
+            const table = data.split('\n');
+            table.forEach(row =>{
+                const columns = row.split(',');
+                const letter = columns[0];
+                const fre = columns[1];
+                x.push(letter);
+                y.push(fre);
+            })
+            return { x , y };
+        }
+        
+    </script>
+</body>
+</html>
